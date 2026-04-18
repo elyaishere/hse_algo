@@ -1,5 +1,7 @@
 #include "graph.h"
-#include "utils.h"
+#include "traverse.h"
+#include <cstdlib>
+#include <iostream>
 
 int main() {
   const size_t size = 6;
@@ -15,9 +17,10 @@ int main() {
 
   // 0 - 2
   // |   |
-  // 3 - 1
+  // 3 - [1]
   //     | \
   //     5 - 4
 
-  print_euler_cycle(gr);
+  for (auto v : find_cut_vertices(gr))
+    std::cout << v << std::endl;
 }

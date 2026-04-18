@@ -1,31 +1,38 @@
 #include "graph.h"
+#include "traverse.h"
+#include "utils.h"
 #include <cstdlib>
 #include <ctime>
 
-// Fills graph randomly
-void Fill(Graph &gr) {
-    std::srand(std::time({}));
-    auto size = gr.Size();
+// fills graph randomly
+template <typename Graph> void fill(Graph &gr) {
+  std::srand(std::time({}));
+  auto size = gr.size();
 
-    for (decltype(size) i = 0; i < size; ++i)
-        for (decltype(size) j = i + 1; j < size; ++j)
-            gr[i, j] = gr[j, i] = rand() % 2;
+  for (decltype(size) i = 0; i < size; ++i)
+    for (decltype(size) j = i + 1; j < size; ++j)
+      if (rand() % 2) {
+        std::cout << "adding edge: " << i << ' ' << j << std::endl;
+        gr.add_edge(i, j);
+      }
 }
 
 int main() {
-    const size_t size = 5;
-    Graph gr(size);
+  const size_t size = 5;
+  auto gr = Graph<AdjMatrix>::create_indirected_graph(size);
 
-    // gr[0, 1] = 1, gr[1, 0] = 1;
-    // gr[0, 2] = 1, gr[2, 0] = 1;
-    // gr[1, 3] = 1, gr[3, 1] = 1;
-    // gr[1, 4] = 1, gr[4, 1] = 1;
+  // gr.add_edge(0, 1);
+  // gr.add_edge(0, 2);
+  // gr.add_edge(1, 3);
+  // gr.add_edge(1, 4);
 
-    Fill(gr);
+  // draw_tree(gr);
 
-    gr.PrintTree();
-    std::cout << std::endl;
-    gr.RemoveLoops();
-    gr.FillVertexDepth();
-    gr.PrintTree(true);
+  fill(gr);
+  auto edges_to_remove = find_cyclic_edges(gr);
+  for (const auto &e : edges_to_remove) {
+    std::cout << "removing edge: " << e.first << "->" << e.second << std::endl;
+    gr.remove_edge(e);
+  }
+  draw_tree(gr);
 }
