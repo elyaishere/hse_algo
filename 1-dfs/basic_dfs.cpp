@@ -1,5 +1,4 @@
 #include "graph.h"
-#include "traverse.h"
 #include "utils.h"
 #include <cstdlib>
 #include <ctime>
@@ -15,6 +14,37 @@ template <typename Graph> void fill(Graph &gr) {
         std::cout << "adding edge: " << i << ' ' << j << std::endl;
         gr.add_edge(i, j);
       }
+}
+
+template <typename Graph>
+std::vector<typename Graph::Edge> find_cyclic_edges(const Graph &graph) {
+
+  std::vector<typename Graph::Edge> cyclic_edges;
+  std::vector<uint8_t> visited(graph.size(), 0);
+
+  auto __dfs = [&graph, &cyclic_edges, &visited](
+                   this auto &&self, Graph::Vertex v, Graph::Vertex p) -> void {
+    // начало обработки вершины
+    visited[v] = 1;
+
+    for (auto to : graph.edges(v)) {
+      if (!visited[to]) { // вершина не посещена
+        self(to, v);
+      } else if (to != p && visited[to] == 1) {
+        // цикл
+        cyclic_edges.emplace_back(v, to);
+      }
+    }
+    // конец обработки вершины
+    visited[v] = 2;
+  };
+
+  for (typename Graph::Vertex v = 0; v < graph.size(); ++v) {
+    if (!visited[v])
+      __dfs(v, -1);
+  }
+
+  return cyclic_edges;
 }
 
 int main() {

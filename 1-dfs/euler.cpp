@@ -1,5 +1,22 @@
 #include "graph.h"
-#include "utils.h"
+
+#include <iostream>
+
+template <typename Graph> void print_euler_cycle(const Graph &graph) {
+  // при прохождении ребра в dfs удаляем это ребро
+  auto __graph = graph;
+
+  auto __dfs = [&__graph](this auto &self, Graph::Vertex v) -> void {
+    for (auto to : __graph.edges(v)) {
+      __graph.remove_edge(v, to);
+      self(to);
+    }
+    std::cout << v << ' ';
+  };
+
+  __dfs(0);
+  std::cout << std::endl;
+}
 
 int main() {
   const size_t size = 6;

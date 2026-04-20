@@ -129,18 +129,6 @@ public:
 
   auto size() const noexcept { return __data.size(); }
 
-  template <typename F> std::vector<Edge> traverse_dfs(F &&on_loop) const {
-    std::vector<uint8_t> visited(__data.size(), 0);
-    std::vector<Edge> tree;
-    tree.reserve(__data.size());
-    for (Vertex v = 0; v < __data.size(); ++v) {
-      if (!visited[v])
-        _traverse_dfs(visited, v, -1, tree, on_loop);
-    }
-
-    return tree;
-  }
-
   Graph invert() const {
     Graph inverted(__data.size(), __type);
 
@@ -193,22 +181,6 @@ private:
     __data.resize(size);
 
     std::ranges::for_each(edges, [this](const auto &edge) { add_edge(edge); });
-  }
-
-  template <typename F>
-  void _traverse_dfs(std::vector<uint8_t> &visited, Vertex v, Vertex p,
-                     std::vector<Edge> &tree, F &&on_loop) const {
-    visited[v] = 1;
-
-    for (auto to : edges(v)) {
-      if (!visited[to]) {
-        tree.emplace_back(v, to);
-        _traverse_dfs(visited, to, v, tree, on_loop);
-      } else if (to != p && visited[to] == 1) { // loop
-        on_loop(v, to);
-      }
-    }
-    visited[v] = 2;
   }
 
   void _add_edge(Vertex from, Vertex to) { __data[from].set(to); }
