@@ -1,5 +1,5 @@
-#include "graph.h"
-#include "utils.h"
+#include "../include/graph.h"
+#include "../include/utils.h"
 #include <cstdlib>
 #include <ctime>
 
